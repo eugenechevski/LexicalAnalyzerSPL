@@ -78,6 +78,18 @@ static void number2ast(unsigned int val)
 
  /* you can add actual definitions below, before the %% */
 
+DIGIT               [0-9]
+LETTER              [a-zA-Z]
+NUMBER              {DIGIT}{DIGIT}*
+LETTER-OR-DIGIT     {LETTER}|{DIGIT}
+IDENT               {LETTER}{LETTER-OR-DIGIT}*
+
+PLUS                \+
+MINUS               \-
+MULT                \*
+DIV                 \/
+
+PUNCTUATION         [.|;|=|,|:=|(|)]
 
 
  /* the rules section starts after the %% below */
