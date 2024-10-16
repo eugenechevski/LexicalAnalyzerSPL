@@ -103,7 +103,9 @@ PUNCTUATION         [.|;|=|,|:|(|)]
 {MULT}             { return multsym; }
 {DIV}              { return divsym; }
 {PUNCTUATION}      { return yytext[0]; } // If single-character punctuation
-[ \t\n]            ; // Ignore whitespace
+[ \t]              ; // Ignore whitespace
+[\n]               ; // Ignore newlines
+"%"[^\n]*\n        ; // Ignore comments starting with % until the newline
 .                  { yyerror(input_filename,"Unrecognized character"); } // Catch-all for unrecognized characters
 
 %%

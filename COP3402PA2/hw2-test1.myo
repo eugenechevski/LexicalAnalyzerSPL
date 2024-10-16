@@ -1,0 +1,10 @@
+Tokens from file hw2-test1.spl
+Number Line  Text
+258    2    "begin"
+hw2-test1.spl:2: Unrecognized character
+258    3    "end"
+46     3    "."
+hw2-test1.spl:3: Unrecognized character
+hw2-test1.spl:4: Unrecognized character
+
+This is a test
