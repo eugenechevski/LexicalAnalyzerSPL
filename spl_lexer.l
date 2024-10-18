@@ -96,9 +96,18 @@ PUNCTUATION         [.|;|=|,|:=|(|)]
 
 %%
 
- /* fill in the rules for your lexer below! */
-
-/* $Id: spl_lexer_user_code.c,v 1.4 2024/10/06 18:43:01 leavens Exp leavens $ */
+ /* Rules Section */
+{IDENT}            { ident2ast(yytext); return identsym; }
+{NUMBER}           { number2ast(atoi(yytext)); return numbersym; }
+{PLUS}             { return plussym; }
+{MINUS}            { return minussym; }
+{MULT}             { return multsym; }
+{DIV}              { return divsym; }
+{PUNCTUATION}      { return yytext[0]; } // If single-character punctuation
+[ \t]              ; // Ignore whitespace
+[\n]               ; // Ignore newlines
+"%"[^\n]*\n        ; // Ignore comments starting with % until the newline
+.                  { yyerror(input_filename,"Unrecognized character"); } // Catch-all for unrecognized characters
 
 %%
 
