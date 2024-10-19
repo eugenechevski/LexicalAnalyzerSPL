@@ -88,9 +88,8 @@ MULT                \*
 DIV                 \/
 NEWLINE             \n
 CR                  \r
-PERIOD              \.
 EOL                 ({NEWLINE}|({CR}{NEWLINE}))
-PUNCTUATION         [;|=|,|:|(|)]
+PUNCTUATION         [.|;|=|,|:|(|)]
 
 
  /* the rules section starts after the %% below */
@@ -98,6 +97,8 @@ PUNCTUATION         [;|=|,|:|(|)]
 %%
 
  /* Rules Section */
+"begin"            { tok2ast(beginsym); return beginsym;}
+"end"            { tok2ast(endsym); return endsym;}
 {IDENT}            { ident2ast(yytext); return identsym; }
 {EOL}              ;/*Ignores End of the line elements*/
 {NUMBER}           { number2ast(atoi(yytext)); return numbersym; }
@@ -105,8 +106,7 @@ PUNCTUATION         [;|=|,|:|(|)]
 {MINUS}            { tok2ast(minussym); return minussym; }
 {MULT}             { tok2ast(multsym); return multsym; }
 {DIV}              { tok2ast(divsym); return divsym; }
-{PERIOD}           { tok2ast(periodsym); return periodsym;}
-{PUNCTUATION}      { return yytext[0]; } // If single-character punctuation
+{PUNCTUATION}      { tok2ast(returnPsymbol(yytext));return returnPsymbol(yytext); } // If single-character punctuation
 [ \t]              ; // Ignore whitespace
 "%"[^\n]*        ; // Ignore comments starting with % until the newline
 .                  {yyerror(input_filename,"invalid character"); } // Catch-all for unrecognized characters
@@ -200,4 +200,33 @@ void lexer_output()
         }
         lexer_print_token(t, yylineno, yytext);
     } while (t != YYEOF);
+}
+/*Read the puntuation symbols in the .spl files
+returns the token symbol into tok2ast and the parser*/
+enum yytokentype returnPsymbol(const char *punctuation)
+{
+   switch (*punctuation)
+        {
+        case '.':
+            return periodsym;
+            break;
+        case ';':
+            return semisym;
+            break;
+        case '=':
+            return eqsym;
+            break;
+        case ',':
+            return commasym;
+            break;
+        case '(':
+            return lparensym;
+            break;
+        case ')':
+            return rparensym;
+            break;
+        default:
+	    yyerror(input_filename,"invalid character");
+        }
+  return periodsym;
 }
