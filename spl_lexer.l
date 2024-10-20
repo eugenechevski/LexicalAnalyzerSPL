@@ -125,7 +125,7 @@ PUNCTUATION         [.|;|=|,|:|(|)]
 {PUNCTUATION}      { tok2ast(returnPsymbol(yytext));return returnPsymbol(yytext); } // If single-character punctuation
 [ \t]              ; // Ignore whitespace
 "%"[^\n]*        ; // Ignore comments starting with % until the newline
-.                  {yyerror(input_filename,"invalid character"); } // Catch-all for unrecognized characters
+.                  {yyerror(input_filename,"invalid character:"); } // Catch-all for unrecognized characters
 
 %%
 
