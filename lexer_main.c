@@ -8,7 +8,7 @@
 int main(char *argv[])
 {
     // A dummy version of the code
-    
+
     // pass the file name to the lexer
     // from the command line
     lexer_init(argv[1]);
