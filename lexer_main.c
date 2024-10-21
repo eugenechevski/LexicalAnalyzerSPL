@@ -1,4 +1,4 @@
-#include <lexer.h>
+#include "lexer.h"
 #include "utilities.h" 
 /**
  * A driver program that simply calls provided functions
@@ -18,7 +18,6 @@ int main(int argc, char *argv[])
     // from the command line
     lexer_init(argv[1]);
     lexer_output();
-    printf("\nThis is a test\n");
 
     return 0;
 }

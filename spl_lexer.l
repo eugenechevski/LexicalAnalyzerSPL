@@ -69,6 +69,14 @@ static void number2ast(unsigned int val)
     t.number.file_loc = file_location_make(input_filename, yylineno);
     t.number.type_tag = number_ast;
     t.number.text = strdup(yytext);
+    
+    if(val > INT_MAX){
+      fflush(stdout);
+      fprintf(stderr, "%s:%d: Number (%s) is too large! \n", input_filename, lexer_line(), yytext);
+      errors_noted = true;
+      return;
+    }
+    
     t.number.value = val;
     yylval = t;
 }
@@ -90,7 +98,13 @@ NEWLINE             \n
 CR                  \r
 EOL                 ({NEWLINE}|({CR}{NEWLINE}))
 PUNCTUATION         [.|;|=|,|:|(|)]
-
+ASSIGN              :=
+EQUALS              ==
+GTHAN               >
+LTHAN               <
+GTHANEQUAL          >=
+LTHANEQUAL          <=
+NOTEQUALS           !=
 
  /* the rules section starts after the %% below */
 
@@ -98,18 +112,38 @@ PUNCTUATION         [.|;|=|,|:|(|)]
 
  /* Rules Section */
 "begin"            { tok2ast(beginsym); return beginsym;}
-"end"            { tok2ast(endsym); return endsym;}
+"end"              { tok2ast(endsym); return endsym;}
+"var"              {tok2ast(varsym); return varsym;}
+"const"            {tok2ast(constsym); return constsym;}
+"proc"             {tok2ast(procsym); return procsym;}
+"call"             { tok2ast(callsym); return callsym;}
+"if"               { tok2ast(ifsym); return ifsym;}
+"then"             { tok2ast(thensym); return thensym;}
+"else"             { tok2ast(elsesym); return elsesym;}
+"while"            { tok2ast(whilesym); return whilesym;}
+"do"               { tok2ast(dosym); return dosym;}
+"read"             { tok2ast(readsym); return readsym;}
+"print"            { tok2ast(printsym); return printsym;}
+"divisible"        { tok2ast(divisiblesym); return divisiblesym;}
+"by"               { tok2ast(bysym); return bysym;}
 {IDENT}            { ident2ast(yytext); return identsym; }
 {EOL}              ;/*Ignores End of the line elements*/
-{NUMBER}           { number2ast(atoi(yytext)); return numbersym; }
+{ASSIGN}           {tok2ast(becomessym); return becomessym;}
+{NUMBER}           { number2ast(atoi(yytext)); return numbersym;}
 {PLUS}             { tok2ast(plussym); return plussym; }
 {MINUS}            { tok2ast(minussym); return minussym; }
 {MULT}             { tok2ast(multsym); return multsym; }
 {DIV}              { tok2ast(divsym); return divsym; }
 {PUNCTUATION}      { tok2ast(returnPsymbol(yytext));return returnPsymbol(yytext); } // If single-character punctuation
 [ \t]              ; // Ignore whitespace
-"%"[^\n]*        ; // Ignore comments starting with % until the newline
-.                  {yyerror(input_filename,"invalid character"); } // Catch-all for unrecognized characters
+"%"[^\n]*          ; // Ignore comments starting with % until the newline
+{EQUALS}           { tok2ast(eqeqsym); return eqeqsym; }
+{NOTEQUALS}        { tok2ast(neqsym); return neqsym; }
+{LTHANEQUAL}       { tok2ast(leqsym); return leqsym; }
+{GTHANEQUAL}       { tok2ast(geqsym); return geqsym; }
+{LTHAN}            { tok2ast(ltsym); return ltsym; }
+{GTHAN}            { tok2ast(gtsym); return gtsym; }
+.                  { yyerror(input_filename,"invalid character"); } // Catch-all for unrecognized characters
 
 %%
 
@@ -157,7 +191,7 @@ unsigned int lexer_line() {
 void yyerror(const char *filename, const char *msg)
 {
     fflush(stdout);
-    fprintf(stderr, "%s:%d: %s '%c' ('\\0%o') \n", input_filename, lexer_line(), msg,*yytext,*yytext);//Ojo
+    fprintf(stderr, "%s:%d: %s: '%c' ('\\0%o')\n", input_filename, lexer_line(), msg,*yytext,*yytext);//Ojo
     errors_noted = true;
 }
 
